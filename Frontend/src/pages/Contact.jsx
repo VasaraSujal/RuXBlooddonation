@@ -2,11 +2,15 @@ import { useState } from 'react';
 import BackButton from '../components/BackButton.jsx';
 import { useLanguage } from '../utils/LanguageContext';
 import { getTranslation } from '../utils/languages';
+import { useNavigate } from 'react-router-dom';
+
 
 const Contact = () => {
   const { currentLanguage } = useLanguage();
   const t = (key) => getTranslation(key, currentLanguage);
-  
+  const navigate = useNavigate();
+
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -132,7 +136,7 @@ const Contact = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -146,7 +150,7 @@ const Contact = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <BackButton text={t('backToHomepage')} customPath="/" className="bg-blue-600 hover:bg-blue-700 text-black" />
             </div>
@@ -167,7 +171,7 @@ const Contact = () => {
                 <div className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">24x7 AVAILABLE</div>
               </div>
               <p className="text-gray-700 leading-relaxed">
-                <strong>Official support</strong> for blood donation queries, emergency blood requirements, and technical assistance. 
+                <strong>Official support</strong> for blood donation queries, emergency blood requirements, and technical assistance.
                 <span className="text-blue-700 font-semibold">Multilingual support available in Hindi and English.</span>
               </p>
             </div>
@@ -188,15 +192,19 @@ const Contact = () => {
             National Emergency Blood Service - Immediate assistance for critical blood requirements
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a 
-              href="tel:1075" 
+            <a
+              href="tel:1075"
               className="bg-white text-red-600 hover:bg-red-50 px-8 py-4 rounded-lg font-semibold text-lg shadow-md transition-colors duration-200 flex items-center justify-center"
             >
               📞 Call 1075 (National Helpline)
             </a>
-            <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-md transition-colors duration-200 flex items-center justify-center">
+            <button
+              onClick={() => navigate("/panic-mode")}
+              className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-md transition-colors duration-200 flex items-center justify-center"
+            >
               🚨 Emergency Alert System
             </button>
+
           </div>
         </div>
 
@@ -227,7 +235,7 @@ const Contact = () => {
               </div>
               <h2 className="text-2xl font-bold text-blue-900">{t('sendUsMessage')}</h2>
             </div>
-            
+
             {submitted && (
               <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 text-center">
                 <div className="flex items-center justify-center">
@@ -338,7 +346,7 @@ const Contact = () => {
           {/* Office Locations */}
           <div className="bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">{t('ourOffices')}</h2>
-            
+
             <div className="space-y-8">
               {officeLocations.map((office, index) => (
                 <div key={index} className="border-b border-gray-200 pb-6 last:border-b-0">
@@ -377,7 +385,7 @@ const Contact = () => {
         {/* FAQ Section */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">{t('frequentlyAskedQuestions')}</h2>
-          
+
           <div className="space-y-6">
             {faqs.map((faq, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -399,7 +407,7 @@ const Contact = () => {
           <p className="text-xl text-teal-100 mb-8">
             Follow us on social media for updates, success stories, and blood donation drives in your area
           </p>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <a href="#" className="bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors">
               <div className="text-2xl mb-2">📘</div>

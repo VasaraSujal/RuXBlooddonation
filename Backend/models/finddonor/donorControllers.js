@@ -48,7 +48,8 @@ const findNearbyDonors = async (req, res) => {
       bloodGroup: 1,
       city: 1,
       age: 1,
-      coordinates: 1, // needed for distance calculation
+      coordinates: 1,
+      _id:1, // needed for distance calculation
     })
     .toArray();
 
@@ -62,6 +63,7 @@ const findNearbyDonors = async (req, res) => {
       const dist = calculateDistance(latitude, longitude, donorLat, donorLng);
 
       return {
+        _id: donor._id,
         fullName: donor.fullName,
         bloodGroup: donor.bloodGroup,
         city: donor.city,

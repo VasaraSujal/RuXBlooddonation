@@ -10,10 +10,13 @@ const FindBlood = () => {
   const [locationDeniedMessage, setLocationDeniedMessage] = useState("");
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
-  // ✅ Access user and token from Redux
+  // 🔴 NEW — message modal states
+  const [showMessagePopup, setShowMessagePopup] = useState(false);
+  const [selectedDonor, setSelectedDonor] = useState(null);
+  const [message, setMessage] = useState("");
+
   const { user, token } = useSelector((state) => state.auth);
-  console.log("Logged in user:", user);
-  console.log("Auth token:", token);
+  // Fetch nearby donors
   const fetchDonors = async (latitude, longitude) => {
     try {
       setLoading(true);
@@ -69,22 +72,57 @@ const FindBlood = () => {
     );
   };
 
-  // ✅ Handle "Send Request"
+  // 🔴 NEW — open popup for message
   const handleSendRequest = (donor) => {
     if (!user || !token) {
-      // not logged in → show popup
       setShowLoginPopup(true);
       return;
     }
-
     if (!user.isVerified) {
       alert("Your account is not verified. Please verify before sending requests.");
       return;
     }
 
-    // ✅ If verified user → call API
-    alert(`Request sent to ${donor.fullName}!`);
-    // You can later add fetch POST call here to backend request API
+    setSelectedDonor(donor);
+    setShowMessagePopup(true);
+  };
+
+  console.log("Selected Donor:", selectedDonor);
+  // 🔴 NEW — send request to backend
+  const handleConfirmSendRequest = async () => {
+    if (!message.trim()) {
+      alert("Please enter a message before sending.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/requests/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ attach token
+        },
+        body: JSON.stringify({
+          donorId: selectedDonor._id,
+          message,
+          distance: selectedDonor.distanceFromYou,
+        }),
+      });
+      console.log(selectedDonor._id);
+      const data = await response.json();
+      if (response.ok) {
+        alert("✅ Request sent successfully and email delivered!");
+      } else {
+        alert(`❌ ${data.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error sending request");
+    } finally {
+      setShowMessagePopup(false);
+      setMessage("");
+      setSelectedDonor(null);
+    }
   };
 
   return (
@@ -124,19 +162,6 @@ const FindBlood = () => {
         </div>
       </div>
 
-      {/* Location Denied Warning */}
-      {!locationAllowed && (
-        <div className="max-w-4xl mx-auto mb-6 text-center text-red-600">
-          <p>{locationDeniedMessage}</p>
-          <button
-            onClick={handleSearch}
-            className="mt-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-          >
-            Allow Location
-          </button>
-        </div>
-      )}
-
       {/* Donor Results */}
       <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {donors.length > 0 ? (
@@ -173,7 +198,37 @@ const FindBlood = () => {
         )}
       </div>
 
-      {/* 🔴 Popup for login/register */}
+      {/* 🔴 Message Popup */}
+      {showMessagePopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-96">
+            <h2 className="text-lg font-semibold mb-3 text-gray-800">Send Request Message</h2>
+            <textarea
+              rows="4"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Write a message for the donor..."
+              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none"
+            ></textarea>
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => setShowMessagePopup(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmSendRequest}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🔴 Login Popup */}
       {showLoginPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center w-96">
@@ -181,7 +236,7 @@ const FindBlood = () => {
             <p className="text-gray-600 mb-5">You need to log in or register to send a blood request.</p>
             <div className="flex justify-center gap-3">
               <button
-                onClick={() => window.location.href = "/register"}
+                onClick={() => (window.location.href = "/register")}
                 className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
               >
                 Register
@@ -189,7 +244,7 @@ const FindBlood = () => {
               <button
                 onClick={() => {
                   setShowLoginPopup(false);
-                  window.location.href = "/"; // You can replace with modal trigger
+                  window.location.href = "/";
                 }}
                 className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
               >

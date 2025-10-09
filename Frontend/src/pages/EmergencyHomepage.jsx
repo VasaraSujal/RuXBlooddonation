@@ -30,15 +30,15 @@ const EmergencyHomepage = ({ user }) => {
     }
   }, []);
 
-  //   const handleRoleSelection = (role) => {
-  //     // Simply navigate to the appropriate dashboard
-  //     // RouteGuard will handle authentication and redirect to login if needed
-  //     if (role === 'donor' || role === 'user') {
-  //       navigate('/user');
-  //     } else if (role === 'ngo') {
-  //       navigate('/ngo');
-  //     }
-  //   };
+    const handleRoleSelection = (role) => {
+      // Simply navigate to the appropriate dashboard
+      // RouteGuard will handle authentication and redirect to login if needed
+      if (role === 'donor' || role === 'user') {
+        navigate('/user');
+      } else if (role === 'ngo') {
+        navigate('/ngo');
+      }
+    };
 
   return (
     <div className="min-h-screen bg-gray-50">
