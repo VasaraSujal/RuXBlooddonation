@@ -5,14 +5,20 @@ import './App.css'
 import About from './pages/About'
 import { LanguageProvider } from './utils/LanguageContext'
 import EmergencyHomepage from './pages/EmergencyHomepage'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-    <LanguageProvider>
-      <EmergencyHomepage/>
+       <>
+           <LanguageProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<EmergencyHomepage />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </Router>
       </LanguageProvider>
     </>
   )
