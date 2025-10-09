@@ -68,4 +68,43 @@ const addFullUser = async (req, res) => {
 };
 
 
-module.exports = { addFullUser };
+const addEmergencyGuest = async (req, res) => {
+    try {
+        const db = getDB();
+        const { fullName, phone, bloodGroup, city, email } = req.body;
+
+        if (!fullName || !phone || !bloodGroup) {
+            return res.status(400).json({ message: 'Missing required fields for emergency' });
+        }
+
+        // Check if email or phone already exists
+        const existingUser = await db.collection('users').findOne({ $or: [{ email }, { phone }] });
+        if (existingUser) {
+            return res.status(200).json({ message: 'Guest already exists', userId: existingUser._id });
+        }
+
+        const guestUser = {
+            fullName,
+            phone,
+            bloodGroup,
+            city: city || null,
+            email: email || null,
+            role: "user",
+            isGuest: true,
+            isVerified: false,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
+
+        const result = await db.collection('users').insertOne(guestUser);
+        res.status(201).json({ message: 'Guest added successfully', userId: result.insertedId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+
+
+module.exports = { addFullUser ,addEmergencyGuest };
