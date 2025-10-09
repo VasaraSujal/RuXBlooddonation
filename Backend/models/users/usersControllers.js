@@ -105,6 +105,54 @@ const addEmergencyGuest = async (req, res) => {
 };
 
 
+// Complete guest profile
+const completeGuestProfile = async (req, res) => {
+    try {
+        const db = getDB();
+        const userId = req.params.id;
+        console.log("User ID:", userId);
+        const { password, age, gender, address, city, coordinates, bloodGroup } = req.body;
+    
+        if (!userId || !ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: 'Invalid user ID' });
+} 
+        const userCoordinates = {
+  type: "Point",
+  coordinates: [parseFloat(coordinates.lng), parseFloat(coordinates.lat)]
+};
+
+        const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        const updateFields = {
+            age: age || user.age,
+            gender: gender || user.gender,
+            address: address || user.address,
+            city: city || user.city,
+            bloodGroup: bloodGroup || user.bloodGroup,
+            coordinates: userCoordinates || user.coordinates,
+            isGuest: false,
+            isVerified: true,
+            updatedAt: new Date()
+        };
+
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            updateFields.password = await bcrypt.hash(password, salt);
+        }
+
+        await db.collection('users').updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: updateFields }
+        );
+
+        res.status(200).json({ message: 'Profile updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
 
 
-module.exports = { addFullUser ,addEmergencyGuest };
+
+module.exports = { addFullUser ,addEmergencyGuest,completeGuestProfile };
