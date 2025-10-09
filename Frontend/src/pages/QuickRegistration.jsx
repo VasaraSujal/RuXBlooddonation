@@ -1,22 +1,30 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import BackButton from '../components/BackButton.jsx';
-import { donorApi } from '../services/donorApi';
 
-const QuickRegistration = ({ onLogin }) => {
+const QuickRegistration = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
+    email: '',
     phone: '',
+    password: '',
+    age: '',
+    gender: '',
+    address: '',
     bloodGroup: '',
+    city: '',
+    coordinates: { lat: '', long: '' },
     role: 'donor',
     agreement: false
   });
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  const genders = ['Male', 'Female', 'Other'];
 
+  // 🔹 Update form field
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -24,55 +32,77 @@ const QuickRegistration = ({ onLogin }) => {
     }));
   };
 
+  // 🔹 Go to next step
   const nextStep = () => {
-    if (step === 1 && (!formData.name || !formData.phone)) {
-      alert('Please fill your name and phone number');
-      return;
-    }
-    if (step === 2 && !formData.bloodGroup) {
-      alert('Please select your blood group');
-      return;
+    if (step === 1) {
+      const { fullName, email, phone, password, age, gender, city, address } = formData;
+      if (!fullName  || !phone || !password || !age || !gender || !city || !address) {
+        alert('Please fill all required fields before continuing.');
+        return;
+      }
     }
     setStep(step + 1);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  // 🔹 Detect current location
+  const getLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          handleInputChange('coordinates', {
+            lat: position.coords.latitude,
+            long: position.coords.longitude
+          });
+        },
+        () => alert('Unable to fetch location. Please allow location access.')
+      );
+    } else {
+      alert('Geolocation not supported in this browser.');
+    }
+  };
+
+  // 🔹 Submit form to backend
+  const handleSubmit = async () => {
     if (!formData.agreement) {
-      alert('Please agree to the terms to complete registration.');
+      alert('Please agree to the terms before submitting.');
+      return;
+    }
+
+    if (!formData.coordinates.lat || !formData.coordinates.long) {
+      alert('Please detect your location before submitting.');
       return;
     }
 
     setLoading(true);
-    
     try {
-      const response = await donorApi.createDonor({
-        name: formData.name,
-        phone: formData.phone,
-        bloodGroup: formData.bloodGroup,
-        available: true,
-        coordinates: { lat: 0, lng: 0 } // Placeholder coordinates
+      const response = await fetch('http://localhost:5000/api/users/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email || null,
+          phone: formData.phone,
+          password: formData.password,
+          age: Number(formData.age),
+          gender: formData.gender,
+          address: formData.address,
+          bloodGroup: formData.bloodGroup,
+          city: formData.city,
+          coordinates: formData.coordinates,
+         
+        })
       });
 
-      if (response.success) {
-        const userData = {
-          id: response.data.id,
-          name: response.data.name,
-          phone: response.data.phone,
-          bloodGroup: response.data.bloodGroup,
-          role: 'donor',
-          registeredAt: response.data.createdAt || new Date().toISOString()
-        };
-        
-        onLogin(userData);
-        alert('Registration successful! Welcome to BloodConnect+');
-        navigate('/');
+      const result = await response.json();
+      if (response.ok) {
+        alert('✅ Registration successful!');
+        navigate('/login');
       } else {
-        alert(`Registration failed: ${response.message || 'Please try again'}`);
+        alert(`❌ Registration failed: ${result.message}`);
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      alert(`Registration failed: ${error.message || 'An unexpected error occurred'}`);
+      console.error('Error submitting form:', error);
+      alert('Server error. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -80,18 +110,16 @@ const QuickRegistration = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
-      {/* HEADER */}
+      {/* Header */}
       <div className="bg-purple-600 text-white py-4 px-4">
         <div className="max-w-2xl mx-auto flex items-center">
-          <Link to="/" className="mr-4 hover:bg-purple-700 p-2 rounded">
-            ← Back
-          </Link>
+          <Link to="/" className="mr-4 hover:bg-purple-700 p-2 rounded">← Back</Link>
           <h1 className="text-2xl font-bold">⚡ Quick Registration</h1>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto p-4">
-        {/* PROGRESS INDICATOR */}
+        {/* Step Indicator */}
         <div className="mb-8">
           <div className="flex items-center justify-center space-x-4 mb-4">
             {[1, 2, 3].map((number) => (
@@ -107,56 +135,60 @@ const QuickRegistration = ({ onLogin }) => {
               </div>
             ))}
           </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-600">Step {step} of 3 - Only 30 seconds to save lives!</p>
-          </div>
+          <p className="text-center text-sm text-gray-600">Step {step} of 3</p>
         </div>
 
-        {/* STEP 1: BASIC INFO */}
+        {/* STEP 1 — Basic Info */}
         {step === 1 && (
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-center mb-6">
-              <div className="text-6xl mb-4">👋</div>
-              <h2 className="text-2xl font-bold mb-2">Hello Future Life-Saver!</h2>
-              <p className="text-gray-600">Just need your basic info to get started</p>
-            </div>
+          <div className="bg-white rounded-xl shadow-lg p-8 space-y-4">
+            <h2 className="text-2xl font-bold text-center mb-4">🧾 Basic Information</h2>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-lg font-semibold mb-2">Your Name *</label>
-                <input 
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Enter your full name"
-                  className="w-full p-4 text-lg border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
-                  autoFocus
-                />
-              </div>
+            <input type="text" placeholder="Full Name *"
+              value={formData.fullName} onChange={(e) => handleInputChange('fullName', e.target.value)}
+              className="w-full p-3 border-2 border-gray-300 rounded-lg" />
 
-              <div>
-                <label className="block text-lg font-semibold mb-2">Phone Number *</label>
-                <input 
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="Enter your mobile number"
-                  className="w-full p-4 text-lg border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none"
-                />
-                <p className="text-sm text-gray-500 mt-1">We'll only call for urgent blood requests</p>
-              </div>
+            <input type="email" placeholder="Email *"
+              value={formData.email} onChange={(e) => handleInputChange('email', e.target.value)}
+              className="w-full p-3 border-2 border-gray-300 rounded-lg" />
 
-              <button 
-                onClick={nextStep}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xl font-bold py-4 rounded-lg transition-colors"
+            <input type="tel" placeholder="Phone *"
+              value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)}
+              className="w-full p-3 border-2 border-gray-300 rounded-lg" />
+
+            <input type="password" placeholder="Password *"
+              value={formData.password} onChange={(e) => handleInputChange('password', e.target.value)}
+              className="w-full p-3 border-2 border-gray-300 rounded-lg" />
+
+            <div className="grid grid-cols-2 gap-4">
+              <input type="number" placeholder="Age *"
+                value={formData.age} onChange={(e) => handleInputChange('age', e.target.value)}
+                className="p-3 border-2 border-gray-300 rounded-lg" />
+              <select
+                value={formData.gender}
+                onChange={(e) => handleInputChange('gender', e.target.value)}
+                className="p-3 border-2 border-gray-300 rounded-lg"
               >
-                Continue → Blood Group
-              </button>
+                <option value="">Select Gender *</option>
+                {genders.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
             </div>
+
+            <input type="text" placeholder="City *"
+              value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)}
+              className="w-full p-3 border-2 border-gray-300 rounded-lg" />
+
+            <input type="text" placeholder="Full Address *"
+              value={formData.address} onChange={(e) => handleInputChange('address', e.target.value)}
+              className="w-full p-3 border-2 border-gray-300 rounded-lg" />
+
+            <button onClick={nextStep}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg mt-4">
+              Continue → Blood Group
+            </button>
           </div>
         )}
 
-        {/* STEP 2: BLOOD GROUP */}
+        {/* STEP 2 — Blood Group Selection */}
         {step === 2 && (
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center mb-6">
@@ -185,130 +217,77 @@ const QuickRegistration = ({ onLogin }) => {
               <div className="bg-blue-50 p-4 rounded-lg mb-4">
                 <p className="text-blue-700">
                   <strong>Blood Group {formData.bloodGroup} selected!</strong>
-                  {formData.bloodGroup === 'O-' && ' 🌟 You\'re a universal donor - super hero!'}
+                  {formData.bloodGroup === 'O-' && ' 🌟 You’re a universal donor - super hero!'}
                   {formData.bloodGroup === 'AB+' && ' 🌟 You can receive from anyone!'}
                 </p>
               </div>
             )}
 
             <div className="flex space-x-3">
-              <button 
-                onClick={() => setStep(1)}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-lg font-bold py-4 rounded-lg transition-colors"
-              >
+              <button onClick={() => setStep(1)}
+                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-lg font-bold py-4 rounded-lg">
                 ← Back
               </button>
-              <button 
-                onClick={nextStep}
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-lg font-bold py-4 rounded-lg transition-colors"
-              >
-                Continue → Final Step
+              <button onClick={nextStep}
+                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white text-lg font-bold py-4 rounded-lg">
+                Continue → Location
               </button>
             </div>
           </div>
         )}
 
-        {/* STEP 3: CONFIRMATION */}
+        {/* STEP 3 — Location + Agreement */}
         {step === 3 && (
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-center mb-6">
-              <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-2xl font-bold mb-2">Almost Done!</h2>
-              <p className="text-gray-600">Confirm your details and join the life-saving community</p>
+          <div className="bg-white rounded-xl shadow-lg p-8 space-y-4">
+            <h2 className="text-2xl font-bold text-center mb-4">📍 Detect Location & Confirm</h2>
+
+            <div className="bg-blue-50 p-4 rounded-lg text-center">
+              <p className="mb-2 text-gray-700">
+                Click below to detect your location automatically.
+              </p>
+              <button
+                onClick={getLocation}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg"
+              >
+                Detect My Location
+              </button>
             </div>
 
-            {/* SUMMARY */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="font-bold mb-3">Your Registration Summary:</h3>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Name:</span>
-                  <strong>{formData.name}</strong>
-                </div>
-                <div className="flex justify-between">
-                  <span>Phone:</span>
-                  <strong>{formData.phone}</strong>
-                </div>
-                <div className="flex justify-between">
-                  <span>Blood Group:</span>
-                  <strong className="text-red-600">{formData.bloodGroup}</strong>
-                </div>
-                <div className="flex justify-between">
-                  <span>Role:</span>
-                  <strong>Blood Donor</strong>
-                </div>
+            {formData.coordinates.lat && (
+              <div className="text-center text-green-600 font-semibold">
+                ✅ Location Detected: {formData.coordinates.lat.toFixed(4)}, {formData.coordinates.long.toFixed(4)}
               </div>
-            </div>
+            )}
 
-            {/* AGREEMENT */}
-            <div className="mb-6">
-              <label className="flex items-start space-x-3 cursor-pointer">
-                <input 
-                  type="checkbox"
-                  checked={formData.agreement}
-                  onChange={(e) => handleInputChange('agreement', e.target.checked)}
-                  className="mt-1 w-5 h-5 text-purple-600"
-                />
-                <div className="text-sm text-gray-600">
-                  <p className="mb-2">I agree to:</p>
-                  <ul className="space-y-1 ml-4">
-                    <li>• Receive calls/SMS for urgent blood requests</li>
-                    <li>• Donate blood voluntarily when possible</li>
-                    <li>• Provide accurate health information</li>
-                    <li>• Follow all blood donation guidelines</li>
-                  </ul>
-                  <p className="mt-2 font-semibold">By registering, I commit to saving lives! 🦸‍♂️</p>
-                </div>
-              </label>
-            </div>
+            <label className="flex items-start space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.agreement}
+                onChange={(e) => handleInputChange('agreement', e.target.checked)}
+                className="mt-1 w-5 h-5 text-purple-600"
+              />
+              <div className="text-sm text-gray-600">
+                <p>I agree to:</p>
+                <ul className="ml-4 list-disc">
+                  <li>Receive calls/SMS for urgent blood requests</li>
+                  <li>Donate voluntarily when possible</li>
+                  <li>Provide accurate info</li>
+                </ul>
+              </div>
+            </label>
 
             <div className="flex space-x-3">
-              <button 
-                onClick={() => setStep(2)}
-                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-lg font-bold py-4 rounded-lg transition-colors"
-              >
-                ← Back
-              </button>
-              <button 
+              <button onClick={() => setStep(2)} className="flex-1 bg-gray-300 py-3 rounded-lg">← Back</button>
+              <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white text-lg font-bold py-4 rounded-lg transition-colors disabled:opacity-50"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg disabled:opacity-50"
               >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Registering...
-                  </div>
-                ) : (
-                  '🎯 REGISTER & SAVE LIVES!'
-                )}
+                {loading ? 'Registering...' : '🎯 Register Now'}
               </button>
             </div>
           </div>
         )}
-
-        {/* BENEFITS SIDEBAR */}
-        <div className="mt-8 bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-6">
-          <h3 className="text-lg font-bold mb-3">🌟 Why Register?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            <div className="flex items-center">
-              <span className="mr-2">❤️</span>
-              Get priority when you need blood
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2">📱</span>
-              Instant notifications for urgent requests
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2">🏥</span>
-              Access to all blood banks
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2">🎖️</span>
-              Digital donor certificates
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
