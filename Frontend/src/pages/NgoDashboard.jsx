@@ -77,18 +77,18 @@ const NgoDashboard = () => {
   const navigate = useNavigate();
 
   // Add role checking on component mount
-  useEffect(() => {
-    const currentRole = getCurrentRole();
-    if (currentRole && currentRole !== 'ngo') {
-      // If user has wrong role, redirect to correct dashboard
-      if (currentRole === 'user') {
-        window.location.href = '/user';
-      } else {
-        window.location.href = '/';
-      }
-      return; // Prevent further execution
-    }
-  }, []);
+  // useEffect(() => {
+  //   const currentRole = getCurrentRole();
+  //   if (currentRole && currentRole !== 'ngo') {
+  //     // If user has wrong role, redirect to correct dashboard
+  //     if (currentRole === 'user') {
+  //       window.location.href = '/user';
+  //     } else {
+  //       window.location.href = '/';
+  //     }
+  //     return; // Prevent further execution
+  //   }
+  // }, []);
 
   const getStockStatus = (current, capacity) => {
     const percentage = (current / capacity) * 100;

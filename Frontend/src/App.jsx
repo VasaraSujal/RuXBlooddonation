@@ -15,6 +15,9 @@ import Statistics from './pages/Statistics'
 import Camps from './pages/Camps'
 
 import FindBlood from './pages/FindDonor'
+import OneClickPanicMode from './pages/OneClickPanicMode'
+import UserDashboard from './pages/UserDashboard'
+import NgoDashboard from './pages/NgoDashboard'
 
 
 function App() {
@@ -36,7 +39,9 @@ function App() {
         <Route path="/camps" element={<Camps />} />
 
         <Route path="/finddonor" element={<FindBlood />} />
-
+        <Route path="/panic-mode" element={<OneClickPanicMode />} />
+        <Route path="/user" element={<UserDashboard />} />
+        <Route path="/ngo" element={<NgoDashboard />} />
       </Routes>
     </Router>
       </LanguageProvider>
