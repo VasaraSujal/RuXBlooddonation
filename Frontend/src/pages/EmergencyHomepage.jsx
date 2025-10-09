@@ -13,7 +13,7 @@ const EmergencyHomepage = ({ user }) => {
 
   // Helper function for translations
   const t = (key) => getTranslation(key, currentLanguage);
-  //   const navigate = useNavigate();
+    const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);

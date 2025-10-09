@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// import BackButton from '../components/BackButton.jsx';
+import BackButton from '../components/BackButton.jsx';
 import { useLanguage } from '../utils/LanguageContext';
 import { getTranslation } from '../utils/languages';
 
@@ -41,9 +41,9 @@ const About = () => {
               </div>
             </div>
             
-            {/* <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4">
               <BackButton text={t('backToHomepage')} customPath="/" className="bg-blue-600 hover:bg-blue-700 text-white" />
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
