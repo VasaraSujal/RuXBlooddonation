@@ -5,7 +5,7 @@ import BloodCompatibilityHomepageChart from "../components/BloodCompatibilityHom
 import { useLanguage } from "../utils/LanguageContext";
 import { getTranslation } from "../utils/languages";
 import LanguageSelector from "../components/LanguageSelector";
-
+import Navbar from "../components/Navbar.jsx";
 const EmergencyHomepage = ({ user }) => {
   const [showQuickReg, setShowQuickReg] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -132,7 +132,7 @@ const EmergencyHomepage = ({ user }) => {
       </div>
 
       {/* Navigation Bar */}
-      <div className="bg-red-600 shadow-sm">
+      {/* <div className="bg-red-600 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center space-x-8 py-3 text-white text-sm font-medium">
             <Link to="/" className="hover:bg-red-700 px-3 py-2 rounded">
@@ -161,7 +161,11 @@ const EmergencyHomepage = ({ user }) => {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
+
+      <Navbar />
+
+      
 
       {/* Emergency Alert */}
       <div className="bg-orange-500 text-white py-2 px-4 text-center">
