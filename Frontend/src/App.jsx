@@ -7,6 +7,7 @@ import { LanguageProvider } from './utils/LanguageContext'
 import EmergencyHomepage from './pages/EmergencyHomepage'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import QuickRegistration from './pages/QuickRegistration'
+import FindDonor from './pages/FindDonor'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<EmergencyHomepage />} />
         <Route path="/about" element={<About />} />
         <Route path="/register" element={<QuickRegistration />} />
+        <Route path="/finddonor" element={<FindDonor />} />
       </Routes>
     </Router>
       </LanguageProvider>
