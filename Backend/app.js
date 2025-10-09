@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser');
 const app = express();
 
 const userRoutes = require('./models/users/usersroutes');
-const authRoutes = require('./models/auth/authRoutes');
+const authRoutes = require('./models/authentication/authRoutes');
 // ✅ Configure CORS for React frontend
 app.use(cors());
 
