@@ -63,73 +63,7 @@ const EmergencyHomepage = ({ user }) => {
           </div>
         </div>
       </div>
-
-      {/* Main Platform Header */}
-      <div className="bg-white border-b-4 border-red-600 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              {/* Circular Indian Map Icon */}
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-green-400 rounded-full flex items-center justify-center shadow-lg">
-                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                  <svg
-                    viewBox="0 0 100 100"
-                    className="w-8 h-8 fill-orange-500"
-                  >
-                    {/* Simplified Indian Map Outline */}
-                    <path
-                      d="M50 10 
-                            C60 12 70 20 75 30
-                            L78 35
-                            C80 40 82 45 80 50
-                            L75 60
-                            C70 70 65 75 60 78
-                            L55 80
-                            C50 85 45 80 40 78
-                            L35 75
-                            C30 70 25 65 22 55
-                            L20 50
-                            C18 45 20 40 22 35
-                            L25 30
-                            C30 20 40 12 50 10 Z"
-                      className="drop-shadow-sm"
-                    />
-                    {/* Small dots for major cities */}
-                    <circle cx="45" cy="35" r="1.5" className="fill-red-600" />
-                    <circle cx="55" cy="45" r="1.5" className="fill-red-600" />
-                    <circle cx="40" cy="55" r="1.5" className="fill-red-600" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Portal Title */}
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-blue-600 bg-clip-text text-transparent">
-                  BloodConnect+
-                </h1>
-                <p className="text-sm font-semibold text-red-600">
-                  {t("siteTagline")}
-                </p>
-                <p className="text-xs text-gray-600">
-                  A Unified Network for Blood Management & Emergency Response
-                </p>
-              </div>
-            </div>
-
-            {/* Platform Contact */}
-            <div className="hidden md:flex items-center space-x-6">
-              <div className="text-right">
-                <div className="text-xs text-gray-500">Helpline</div>
-                <div className="text-sm font-medium">104</div>
-              </div>
-              <div className="text-right">
-                <div className="text-xs text-gray-500">Emergency</div>
-                <div className="text-sm font-medium text-red-600">108</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
 
       {/* Navigation Bar */}
       {/* <div className="bg-red-600 shadow-sm">
