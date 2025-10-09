@@ -227,7 +227,7 @@ const NgoDashboard = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <BackButton text="Back to Home" customPath="/" className="bg-blue-600 hover:bg-blue-700 text-white" />
+              <BackButton text="Back to Home" customPath="/" className="bg-blue-600 hover:bg-blue-700 text-black" />
             </div>
           </div>
         </div>
@@ -252,8 +252,8 @@ const NgoDashboard = () => {
             </div>
             <div className="text-right">
               <div className="bg-white bg-opacity-20 rounded-lg p-4">
-                <div className="text-2xl font-bold">{organizationProfile.totalBeds}</div>
-                <div className="text-sm text-blue-100 font-semibold">Total Beds</div>
+                <div className="text-2xl text-blue-800  font-bold">{organizationProfile.totalBeds}</div>
+                <div className="text-sm text-blue-700 font-semibold">Total Beds</div>
               </div>
             </div>
           </div>
