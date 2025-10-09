@@ -5,10 +5,10 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 
-const userRoutes = require('./modules/users/usersroutes');
-const donorRoutes = require('./modules/finddonor/donorroutes');
-const authRoutes = require('./modules/auth/authRoutes');
-const requestRoutes = require('./modules/requests/requestRoutes');
+const userRoutes = require('./models/users/usersroutes');
+const donorRoutes = require('./models/finddonor/donorroutes');
+const authRoutes = require('./models/authentication/authRoutes');
+const requestRoutes = require('./models/requests/requestRoutes');
 // ✅ Configure CORS for React frontend
 app.use(cors());
 

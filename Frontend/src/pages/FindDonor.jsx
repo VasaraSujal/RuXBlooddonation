@@ -12,7 +12,8 @@ const FindBlood = () => {
 
   // ✅ Access user and token from Redux
   const { user, token } = useSelector((state) => state.auth);
-
+  console.log("Logged in user:", user);
+  console.log("Auth token:", token);
   const fetchDonors = async (latitude, longitude) => {
     try {
       setLoading(true);
