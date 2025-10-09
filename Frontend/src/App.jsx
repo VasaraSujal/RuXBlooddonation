@@ -8,6 +8,7 @@ import EmergencyHomepage from './pages/EmergencyHomepage'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import QuickRegistration from './pages/QuickRegistration'
 import FindDonor from './pages/FindDonor'
+import BloodBanks from './pages/BloodBanks'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -21,6 +22,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/register" element={<QuickRegistration />} />
         <Route path="/finddonor" element={<FindDonor />} />
+        <Route path="/blood-banks" element={<BloodBanks />} />
+
       </Routes>
     </Router>
       </LanguageProvider>
