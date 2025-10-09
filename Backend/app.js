@@ -5,8 +5,10 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 
-const userRoutes = require('./models/users/usersroutes');
-const authRoutes = require('./models/authentication/authRoutes');
+const userRoutes = require('./modules/users/usersroutes');
+const donorRoutes = require('./modules/finddonor/donorroutes');
+const authRoutes = require('./modules/auth/authRoutes');
+const requestRoutes = require('./modules/requests/requestRoutes');
 // ✅ Configure CORS for React frontend
 app.use(cors());
 
@@ -22,6 +24,8 @@ app.use((req, res, next) => {
 
 // ✅ Mount API routes
 app.use('/api/users', userRoutes);
-app.use('/api', authRoutes);
+app.use('/api/donors', donorRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/requests', requestRoutes);
 
 module.exports = app;
